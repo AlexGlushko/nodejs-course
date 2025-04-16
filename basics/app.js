@@ -1,18 +1,25 @@
 
 const http = require('http');
 const fs = require('fs');
-const { exit } = require('process');
 
 
-const server = http.createServer((req, res) => {
+const server = http.createServer((request, response) => {
+    const url = request.url;
+    const method = request.method;
 
-    console.log(req);
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('X-Powered-By', 'Node.js');
-    res.statusCode = 200;
 
-    
-    return res.end(); 
+    if (url === '/') {
+        response.setHeader('Content-Type', 'text/html');
+        response.write('<html>');
+        response.write('<head><title>My First Page</title></head>');
+        response.write('<body><h1>Hello from my Node.js Server!</h1></body>');
+        response.write('</html>');
+        return response.end();
+    }
+
+
+    response.statusCode =404
+    return response.end('<h1>Page not foutd</h1>');
 
 });
 
