@@ -30,10 +30,11 @@ const server = http.createServer((request, response) => {
                     console.error(err);
                     return response.end('Error writing file');
                 }
+                response.statusCode = 302;
+                response.setHeader('Location', '/');
+                return response.end();
             });
-            response.statusCode = 302;
-            response.setHeader('Location', '/');
-            return response.end();
+            
         });
     }
 
