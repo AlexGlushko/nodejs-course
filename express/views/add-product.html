@@ -4,20 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Productt</title>
+    <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-    <header>
-       
-        <nav>
-            <a href="/">Products</a>
-            <a href="/admin/add-product">Add Product</a>
+    <header class="main-header">
+        <nav class="main-header__nav">
+            <ul class="main-header__item-list">
+                <li class="main-header__item"><a href="/">Products</a></li>
+                <li class="main-header__item "><a  class="active" href="/admin/add-product">Add Product</a></li>
+            </ul>
         </nav>
     </header>
     <main>
         <h1>Add Product</h1>
-        <form action="/admin/product" method="POST">
-            <input type="text" name="title">
-            <button type="submit">Add Product</button>
+        <form class="product-form" action="/admin/product" method="POST">
+            <div class="form-control">
+                <input type="text" name="title">
+                <button type="submit">Add Product</button>
+            </div>
+    
         </form>
 </body>
 </html>
