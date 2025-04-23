@@ -1,4 +1,4 @@
-{% extends "layouts/main-layout.nunjucks" %}
+{% extends "../layouts/main-layout.nunjucks" %}
 
 
 {% block styles %}
