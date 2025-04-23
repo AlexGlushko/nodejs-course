@@ -1,0 +1,12 @@
+{% extends 'layouts/main-layout.nunjucks' %}
+
+
+{% block content %}
+<form class="product-form" action="/admin/product" method="POST">
+    <div class="form-control">
+        <input type="text" name="title">
+        <button class="btn" type="submit">Add Product</button>
+    </div>
+</form>
+{% endblock %}
+

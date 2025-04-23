@@ -2,15 +2,25 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const nunjucks = require('nunjucks');
 
 const app = express();
-const adminRoutes = require('./routes/admin');
+nunjucks.configure('views', {
+  autoescape: true,
+  express: app,
+  watch: true
+});
+
+app.set('view engine', 'nunjucks');
+// app.set('views', 'views');
+
+const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/admin', adminRoutes);
+app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
 
