@@ -40,7 +40,7 @@ module.exports = class Cart {
     static getCart(callback) {
         fs.readFile(dataStoragePath, (err, fileData) => {
             if (err) {
-                callback(null);
+                callback({products: [], totalPrice: 0});
             } else {
                 callback(JSON.parse(fileData));
             }
