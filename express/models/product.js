@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const rootDir = require('../utils/path');
+const crypto = require("crypto");
 
 const dataStoragePath = path.join(rootDir, 'data', 'products.json');
 
@@ -17,8 +18,12 @@ const getProductsFromFile = (callback) => {
 
 
 module.exports = class Product {
-    constructor(title) {
+    constructor(title, imageUrl, description, price) {
         this.title = title;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.price = price;
+        this.id = crypto.randomUUID();
     }
 
     save() {
@@ -35,5 +40,12 @@ module.exports = class Product {
 
     static fetchAll(callback) {
         getProductsFromFile(callback);
+    }
+
+    static findById(id, callback){
+        getProductsFromFile((products) => {
+            const product = products.find(p => p.id === id);
+            callback(product);
+        });
     }
 } 
