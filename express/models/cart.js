@@ -17,15 +17,13 @@ module.exports = class Cart {
             let updatedProduct;
 
             if (existingProduct) {
-                // updatedProduct = {...existingProduct};  unnecessary copying
-                updatedProduct = existingProduct;
+                updatedProduct = {...existingProduct};
                 updatedProduct.qty = updatedProduct.qty + 1;
-                // cart.products = [...cart.products];   wtf going on here??
+                cart.products = [...cart.products];
                 cart.products[existingProductIndex] = updatedProduct;
             } else {
                 updatedProduct = {id: id, qty: 1};
-                // cart.products = [...cart.products, updatedProduct];  and here
-                cart.products.push(updatedProduct);
+                cart.products = [...cart.products, updatedProduct];  
             }
             cart.totalPrice = cart.totalPrice + parseInt(productPrice);
 
@@ -34,6 +32,7 @@ module.exports = class Cart {
                     console.log(err);
                 }
             });
+            
         });
     };
 
