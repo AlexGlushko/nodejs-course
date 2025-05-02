@@ -48,4 +48,31 @@ module.exports = class Product {
             callback(product);
         });
     }
+
+    static updateProduct(id, updatedProduct, callback) {
+        getProductsFromFile((products) => {
+            const productIndex = products.findIndex(p => p.id === id);
+            products[productIndex] = updatedProduct;
+            fs.writeFile(dataStoragePath, JSON.stringify(products), (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                console.log('File written successfully');
+                callback();
+            });
+        });
+    }
+
+    static deleteProduct(id, callback) {
+        getProductsFromFile((products) => {
+            const updatedProducts = products.filter(p => p.id !== id);
+            fs.writeFile(dataStoragePath, JSON.stringify(updatedProducts), (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                console.log('File written successfully');
+                callback();
+            });
+        });
+    }
 } 

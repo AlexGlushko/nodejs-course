@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Cart = require('../models/cart');
 
 
 
@@ -38,7 +39,31 @@ module.exports.getIndex = (req, res, next) => {
 
 
 module.exports.getCart = (req, res, next) => {
-    res.render('shop/cart', { pageTitle: 'Cart' });
+
+    Cart.getCart((cart) => {
+        Product.fetchAll((products) => {
+            const cartProducts = [];
+            let total = 0;
+
+            for (product of products) {
+                const cartProductData = cart.products.find(prod => prod.id === product.id);
+
+                if (cartProductData) {
+                    cartProducts.push({ productData: product, qty: cartProductData.qty });
+                    total += product.price * cartProductData.qty;
+                }
+            }
+
+            res.render('shop/cart', { 
+                pageTitle: 'Cart', 
+                cart: {
+                    products: cartProducts,
+                    totalPrice: total
+                } 
+            });
+        });
+    });
+
 };
 
 module.exports.postCart = (req, res, next) => {
@@ -49,8 +74,7 @@ module.exports.postCart = (req, res, next) => {
             return res.status(404).render('404', { pageTitle: 'Product Not Found' });
         }
         console.log('Product added to cart:', product.id);
-        // Here you would typically add the product to the user's cart
-        // For now, we'll just redirect to the cart page
+        Cart.addProduct(product.id, product.price);
         res.redirect('/cart');
     });
 };

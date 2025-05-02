@@ -8,16 +8,35 @@
 {% block content %}
 <div class="cart">
     <h1>Your Cart</h1>
-    <!-- {% if cart.length > 0 %}
-        <ul>
-            {% for item in cart %}
-                <li>{{ item.title }} - ${{ item.price }}</li>
+    {% if cart.products.length > 0 %}
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart.products %}
+                <tr>
+                    <td>{{ item.productData.title }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>${{ item.productData.price }}</td>
+                </tr>
             {% endfor %}
-        </ul>
-        <p>Total: ${{ total }}</p>
-    {% else %} -->
+            <tr>
+                <td style="border: none;"></td>
+                <td style="text-align: right; border: none;">Total:</td>
+                <td>${{ cart.totalPrice }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% else %}
         <p>Your cart is empty.</p>
-    <!-- {% endif %} -->
+    {% endif %}
     <a href="/products" class="btn">Continue Shopping</a>
     <a href="/checkout" class="btn">Checkout</a>
 </div>
