@@ -10,12 +10,15 @@ services:
       - "3000:3000"
     volumes:
       - .:/app:rw,cached
-      - /app/node_modules
+      - ./node_modules:/app/node_modules:rw,cached
     environment:
       - NODE_ENV=development
     restart: unless-stopped
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     
 
   mysql:
@@ -30,6 +33,11 @@ services:
       - mysql_data:/var/lib/mysql
       - "./infra/config/mysql/my.cnf:/etc/mysql/conf.d/zz-my.cnf:ro"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
     
 
   adminer:

@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const nunjucks = require('nunjucks');
+const db = require('./utils/database');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,6 +21,14 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorRoutes = require('./routes/errors');
 
+
+db.execute('SELECT * FROM products')
+  .then(result => {
+    console.log(result[0]);
+  })
+  .catch(err => {
+    console.log(err);
+  });
 
 
 app.use('/admin', adminRoutes);

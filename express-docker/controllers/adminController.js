@@ -13,16 +13,24 @@ module.exports.postAddProduct = (req, res, next) => {
         req.body.description,
         parseInt(req.body.price)
     );
-    product.save();
+    product.save().then(() => {
+        res.redirect(301, '/');
+    }
+    ).catch((err) => {
+        console.log(err);
+    });
     
-    res.redirect(301, '/');
+    
 };
 
 module.exports.getEditProduct = (req, res, next) => {
     const productId = req.params.productId;
     
 
-    Product.findById(productId, (product) => {
+    Product.findById(productId)
+    .then(([rows,]) => {
+        
+        const product = rows[0];
         if (!product) {
             return res.status(404).render('404', { pageTitle: 'Product Not Found' });
         }
@@ -32,9 +40,14 @@ module.exports.getEditProduct = (req, res, next) => {
             editeableProduct: product,
             edit: true
         });
-    });
-};
+    })
 
+    .catch((err) => {
+        console.log(err);
+    });
+
+
+};
 
 module.exports.postEditProduct = (req, res, next) => {
     const productId = req.params.productId;
@@ -51,28 +64,36 @@ module.exports.postEditProduct = (req, res, next) => {
     );
     updatedProduct.id = productId;
 
-    Product.updateProduct(productId, updatedProduct, () => {
-        res.redirect(301, '/products/' + productId);
-    });
+    Product.updateProduct(productId, updatedProduct)
+    .then(() => {res.redirect(301, '/products/' + productId)})
+    .catch((err) => {console.log(err);}); 
 
 
 };
 
 
 module.exports.getProducts = (req, res, next) => {
-    Product.fetchAll((products) => {
+    
+    Product.fetchAll()
+    .then(([rows,]) => {
         res.render('admin/products',{
-            prods: products,
+            prods: rows,
             pageTitle: 'Admin Products',
         });
+    })
+    .catch((err) => {
+        console.log(err);
     });
-    
   };
 
 module.exports.deleteProduct = (req, res, next) => {
     const productId = req.body.productId;
     
-    Product.deleteProduct(productId, () => {
+    Product.deleteProduct(productId)
+    .then(() => {
         res.redirect(301, '/admin/products');
+    })
+    .catch((err) => {
+        console.log(err);
     });
 }

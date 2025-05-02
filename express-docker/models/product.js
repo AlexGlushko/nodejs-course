@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const rootDir = require('../utils/path');
+
+const db = require('../utils/database');
+
 const crypto = require("crypto");
 
 const dataStoragePath = path.join(rootDir, 'data', 'products.json');
@@ -27,52 +30,51 @@ module.exports = class Product {
     }
 
     save() {
-        getProductsFromFile((products) => {
-            products.push(this);
-            fs.writeFile(dataStoragePath, JSON.stringify(products), (err) => {
-               if (err) {
-                   console.log(err);
-               }
-                console.log('File written successfully');
-            });
-        });
+        return db.execute(
+            'INSERT INTO products (title, imageUrl, description, price) VALUES (?, ?, ?, ?)', 
+            [
+                this.title, 
+                this.imageUrl, 
+                this.description, 
+                this.price
+            ]
+        )
     }
 
-    static fetchAll(callback) {
-        getProductsFromFile(callback);
+    static fetchAll() {
+        return db.execute('SELECT * FROM products');
     }
 
-    static findById(id, callback){
-        getProductsFromFile((products) => {
-            const product = products.find(p => p.id === id);
-            callback(product);
-        });
+    static findById(id){
+        return db.execute('SELECT * FROM products WHERE id = ?', [id]);
     }
 
-    static updateProduct(id, updatedProduct, callback) {
-        getProductsFromFile((products) => {
-            const productIndex = products.findIndex(p => p.id === id);
-            products[productIndex] = updatedProduct;
-            fs.writeFile(dataStoragePath, JSON.stringify(products), (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                console.log('File written successfully');
-                callback();
-            });
+    static updateProduct(id, updatedProduct) {
+
+        return this.findById(id).then(([rows,]) => {
+            const product = rows[0];
+            if (!product) {
+                throw new Error('Product not found');
+            }
+
+            return db.execute(
+                'UPDATE products SET title = ?, imageUrl = ?, description = ?, price = ? WHERE id = ?',
+                [
+                    updatedProduct.title,
+                    updatedProduct.imageUrl,
+                    updatedProduct.description,
+                    updatedProduct.price,
+                    id
+                ]
+            );
+        }).catch((err) => {
+            console.log(err);
         });
+
+
     }
 
-    static deleteProduct(id, callback) {
-        getProductsFromFile((products) => {
-            const updatedProducts = products.filter(p => p.id !== id);
-            fs.writeFile(dataStoragePath, JSON.stringify(updatedProducts), (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                console.log('File written successfully');
-                callback();
-            });
-        });
+    static deleteProduct(id) {
+        return db.execute('DELETE FROM products WHERE id = ?', [id]);
     }
 } 
