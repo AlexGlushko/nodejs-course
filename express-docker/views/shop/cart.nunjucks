@@ -1,0 +1,43 @@
+{% extends '../layouts/main-layout.nunjucks' %}
+
+
+{% block styles %}
+    <link rel="stylesheet" href="/css/cart.css">
+{% endblock %}
+
+{% block content %}
+<div class="cart">
+    <h1>Your Cart</h1>
+    {% if cart.products.length > 0 %}
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart.products %}
+                <tr>
+                    <td>{{ item.productData.title }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>${{ item.productData.price }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td style="border: none;"></td>
+                <td style="text-align: right; border: none;">Total:</td>
+                <td>${{ cart.totalPrice }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+    <a href="/products" class="btn">Continue Shopping</a>
+    <a href="/checkout" class="btn">Checkout</a>
+</div>
+{% endblock %}
