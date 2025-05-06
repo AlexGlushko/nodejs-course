@@ -4,10 +4,10 @@ const Cart = require('../models/cart');
 
 
 module.exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
-    .then(([rows,]) => {
+    Product.findAll()
+    .then((products) => {
         res.render('shop/product-list',{
-            prods: rows,
+            prods: products,
             pageTitle: 'All products',
         });
     })
@@ -20,10 +20,8 @@ module.exports.getProducts = (req, res, next) => {
 module.exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productId;
 
-    Product.findById(productId)
-    .then(([rows,]) => {
-        
-        const product = rows[0];
+    Product.findByPk(productId)
+    .then((product) => {
         if (!product) {
             return res.status(404).render('404', { pageTitle: 'Product Not Found' });
         }
@@ -40,10 +38,10 @@ module.exports.getProductDetails = (req, res, next) => {
 };
 
 module.exports.getIndex = (req, res, next) => {
-    Product.fetchAll()
-    .then(([rows,]) => {
+    Product.findAll()
+    .then((products) => {
         res.render('shop/index',{
-            prods: rows,
+            prods: products,
             pageTitle: 'Home page',
         });
     })

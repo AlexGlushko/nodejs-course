@@ -7,14 +7,14 @@ module.exports.getAddProduct = (req, res, next) => {
   };
 
 module.exports.postAddProduct = (req, res, next) => {
-    const product = new Product(
-        req.body.title,
-        req.body.imageUrl,
-        req.body.description,
-        parseInt(req.body.price)
-    );
-    product.save().then(() => {
-        res.redirect(301, '/');
+    Product.create({
+        title: req.body.title,
+        imageUrl: req.body.imageUrl,
+        description: req.body.description,
+        price: parseInt(req.body.price)
+    })
+    .then((result) => {
+        res.redirect(301, '/admin/products');
     }
     ).catch((err) => {
         console.log(err);
@@ -27,10 +27,10 @@ module.exports.getEditProduct = (req, res, next) => {
     const productId = req.params.productId;
     
 
-    Product.findById(productId)
-    .then(([rows,]) => {
+    Product.findByPk(productId)
+    .then((product) => {
         
-        const product = rows[0];
+    
         if (!product) {
             return res.status(404).render('404', { pageTitle: 'Product Not Found' });
         }
@@ -56,15 +56,20 @@ module.exports.postEditProduct = (req, res, next) => {
     const description = req.body.description;
     const price = parseInt(req.body.price);
     
-    updatedProduct = new Product(
-        title,
-        imageUrl,
-        description,
-        price
-    );
-    updatedProduct.id = productId;
 
-    Product.updateProduct(productId, updatedProduct)
+    Product.findByPk(productId)
+    .then((product) => {
+        if (!product) {
+            return res.status(404).render('404', { pageTitle: 'Product Not Found' });
+        }
+    
+        product.title = title;
+        product.imageUrl = imageUrl;
+        product.description = description;
+        product.price = price;
+    
+        return product.save();
+    })
     .then(() => {res.redirect(301, '/products/' + productId)})
     .catch((err) => {console.log(err);}); 
 
@@ -74,10 +79,10 @@ module.exports.postEditProduct = (req, res, next) => {
 
 module.exports.getProducts = (req, res, next) => {
     
-    Product.fetchAll()
-    .then(([rows,]) => {
+    Product.findAll()
+    .then(products => {
         res.render('admin/products',{
-            prods: rows,
+            prods: products,
             pageTitle: 'Admin Products',
         });
     })
@@ -89,7 +94,13 @@ module.exports.getProducts = (req, res, next) => {
 module.exports.deleteProduct = (req, res, next) => {
     const productId = req.body.productId;
     
-    Product.deleteProduct(productId)
+    Product.findByPk(productId).then((product) => {
+        if (!product) {
+            return res.status(404).render('404', { pageTitle: 'Product Not Found' });
+        }
+    
+        return product.destroy();
+    })
     .then(() => {
         res.redirect(301, '/admin/products');
     })
