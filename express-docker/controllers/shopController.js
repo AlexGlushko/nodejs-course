@@ -213,5 +213,14 @@ module.exports.postCheckout = (req, res, next) => {
 
 
 module.exports.getOrders = (req, res, next) => {
-    res.render('shop/orders', { pageTitle: 'Orders'});
+
+    req.user
+    .getOrders({ include: ['products'] })
+    .then(orders => {
+        console.log('Orders:', orders);
+        res.render('shop/orders', { 
+            pageTitle: 'Orders', 
+            orders: orders,
+        });
+    })
 };

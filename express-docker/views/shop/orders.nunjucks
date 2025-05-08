@@ -8,6 +8,30 @@
 {% block content %}
 <div class="orders_container">
     <h1>{{ pageTitle }}</h1>
+    {% if orders.length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.createdAt.toLocaleString('en-UK', { dateStyle: "medium", timeStyle: 'short'}) }}</td>
+                        <td>${{ order.totalPrice }}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have no orders yet.</p>
+    {% endif %}
     <a href="/products" class="btn">Continue Shopping</a>
 </div>
 {% endblock %}
