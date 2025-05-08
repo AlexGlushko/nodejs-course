@@ -107,6 +107,19 @@ main {
   color: white;
 }
 
+.btn-danger {
+  font: inherit; 
+  border: 1px solid #d50000;
+  color: #d50000;
+  background: white;
+  border-radius: 3px;
+
+}
+.btn-danger:hover,
+.btn-danger:active {
+  background-color: #d50000;
+  color: white;
+}
 
 .centered__container {
   margin: auto;

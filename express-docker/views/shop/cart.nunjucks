@@ -8,7 +8,7 @@
 {% block content %}
 <div class="cart">
     <h1>Your Cart</h1>
-    {% if cart.products.length > 0 %}
+    {% if products.length > 0 %}
 
 
     <table>
@@ -17,20 +17,32 @@
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Price</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in cart.products %}
+            {% for item in products %}
                 <tr>
-                    <td>{{ item.productData.title }}</td>
-                    <td>{{ item.qty }}</td>
-                    <td>${{ item.productData.price }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.cartItem.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>
+                        <form action="/cart/remove" method="POST">
+                            <input type="hidden" name="productId" value="{{ item.id }}">
+                            <button type="submit" class="btn-danger">Remove</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             <tr>
                 <td style="border: none;"></td>
                 <td style="text-align: right; border: none;">Total:</td>
-                <td>${{ cart.totalPrice }}</td>
+                <td>${{ totalPrice }}</td>
+                <td style="border: none;">
+                    <form action="/cart/clear" method="POST">
+                        <button type="submit" class="btn-danger">Clear cart</button>
+                    </form>
+                </td>
             </tr>
         </tbody>
     </table>
