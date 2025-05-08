@@ -49,7 +49,7 @@ services:
     depends_on:
       - mysql
     environment: 
-      ADMINER_DESIGN: "pepa_linha"
+      ADMINER_DESIGN: "pappu687"
       ADMINER_DEFAULT_SERVER: "mysql"
       ADMINER_DEFAULT_DB: "express_db"
     links:

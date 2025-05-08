@@ -8,7 +8,7 @@
 {% block content %}
 <div class="cart">
     <h1>Your Cart</h1>
-    {% if cart.products.length > 0 %}
+    {% if products.length > 0 %}
 
 
     <table>
@@ -20,17 +20,17 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in cart.products %}
+            {% for item in products %}
                 <tr>
-                    <td>{{ item.productData.title }}</td>
-                    <td>{{ item.qty }}</td>
-                    <td>${{ item.productData.price }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.cartItem.quantity }}</td>
+                    <td>${{ item.price }}</td>
                 </tr>
             {% endfor %}
             <tr>
                 <td style="border: none;"></td>
                 <td style="text-align: right; border: none;">Total:</td>
-                <td>${{ cart.totalPrice }}</td>
+                <td>${{ totalPrice }}</td>
             </tr>
         </tbody>
     </table>

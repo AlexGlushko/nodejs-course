@@ -53,28 +53,25 @@ module.exports.getIndex = (req, res, next) => {
 
 module.exports.getCart = (req, res, next) => {
 
-    Cart.getCart((cart) => {
-        Product.fetchAll((products) => {
-            const cartProducts = [];
-            let total = 0;
+    let existingCart;
 
-            for (product of products) {
-                const cartProductData = cart.products.find(prod => prod.id === product.id);
-
-                if (cartProductData) {
-                    cartProducts.push({ productData: product, qty: cartProductData.qty });
-                    total += product.price * cartProductData.qty;
-                }
-            }
-
-            res.render('shop/cart', { 
-                pageTitle: 'Cart', 
-                cart: {
-                    products: cartProducts,
-                    totalPrice: total
-                } 
-            });
+    req.user
+    .getCart()
+    .then(cart => {
+        existingCart = cart;
+        return cart.getProducts();
+    })
+    .then((products) => {
+        console.log('Products in cart:', products);
+        res.render('shop/cart', { 
+            pageTitle: 'Cart', 
+            products: products,
+            totalPrice: existingCart.totalPrice,
+            
         });
+    })
+    .catch(err => {
+        console.log(err);
     });
 
 };
@@ -82,14 +79,44 @@ module.exports.getCart = (req, res, next) => {
 module.exports.postCart = (req, res, next) => {
     const productId = req.body.productId;
 
-    Product.findById(productId, (product) => {
-        if (!product) {
-            return res.status(404).render('404', { pageTitle: 'Product Not Found' });
+    let existingCart;
+
+    req.user
+    .getCart()
+    .then(cart => {
+        existingCart = cart;
+        return cart.getProducts({ where: { id: productId } });
+    })
+    .then(products => {
+        let product;
+        if (products.length > 0) {
+            product = products[0];
         }
-        console.log('Product added to cart:', product.id);
-        Cart.addProduct(product.id, product.price);
+
+        if (product) {
+            const oldQuantity = product.cartItem.quantity;
+            const newQuantity = oldQuantity + 1;
+            return existingCart.addProduct(product, { through: { quantity: newQuantity } });
+        }
+
+        return Product.findByPk(productId)
+            .then(product => {
+                return existingCart.addProduct(product, { through: { quantity: 1 } });
+            });
+    }).
+    then(() => {
+        return existingCart.getProducts()
+            .then(products => {
+                let totalPrice = 0;
+                products.forEach(product => {
+                    totalPrice += product.cartItem.quantity * product.price;
+                });
+                return existingCart.update({ totalPrice: totalPrice });
+            });
+    })
+    .then(() => {
         res.redirect('/cart');
-    });
+    })
 };
 
 
