@@ -17,6 +17,7 @@
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Price</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -25,12 +26,23 @@
                     <td>{{ item.title }}</td>
                     <td>{{ item.cartItem.quantity }}</td>
                     <td>${{ item.price }}</td>
+                    <td>
+                        <form action="/cart/remove" method="POST">
+                            <input type="hidden" name="productId" value="{{ item.id }}">
+                            <button type="submit" class="btn-danger">Remove</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             <tr>
                 <td style="border: none;"></td>
                 <td style="text-align: right; border: none;">Total:</td>
                 <td>${{ totalPrice }}</td>
+                <td style="border: none;">
+                    <form action="/cart/clear" method="POST">
+                        <button type="submit" class="btn-danger">Clear cart</button>
+                    </form>
+                </td>
             </tr>
         </tbody>
     </table>

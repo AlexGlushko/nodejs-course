@@ -41,6 +41,7 @@ app.use(errorRoutes);
 const User = require('./models/user');
 const Product = require('./models/product');
 const { Cart, CartItem } = require('./models/cart');
+const { Order, OrderItem } = require('./models/order');
 
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
@@ -50,6 +51,11 @@ Cart.belongsTo(User);
 
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
+
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
+Product.belongsToMany(Order, { through: OrderItem });
 
 // sequelize.sync({force: true})
 sequelize.sync()
@@ -66,7 +72,7 @@ sequelize.sync()
   .then(user => {
     return user.getCart().then(cart => {
       if (!cart) {
-        return user.createCart();
+        return user.createCart({totalPrice: 0, totalItems: 0});
       }
       return Promise.resolve(cart);
     })
