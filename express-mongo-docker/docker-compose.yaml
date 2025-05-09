@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  express-app:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app:rw,cached
+      - ./node_modules:/app/node_modules:rw,cached
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      # mongo:
+        # condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
+
+  mysql:
+    image: mysql:8.2
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: express_db
+    ports:
+      - "11011:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - "./infra/config/mysql/my.cnf:/etc/mysql/conf.d/zz-my.cnf:ro"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    
+
+  adminer:
+    image: adminer:5.2.1
+    container_name: adminer
+    ports:
+      - "11012:8080"
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment: 
+      ADMINER_DESIGN: "pappu687"
+      ADMINER_DEFAULT_SERVER: "mysql"
+      ADMINER_DEFAULT_DB: "express_db"
+    links:
+      - mysql
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    command: --wiredTigerCacheSizeGB 1.5
+    ports:
+      - "11013:27017"
+    volumes:
+      - ./infra/config/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - mongo_data:/data/db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.runCommand('ping').ok" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "11014:8081"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    environment:
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=1234
+      - ME_CONFIG_MONGODB_URL=mongodb://root:1234@mongo:27017/?authSource=admin
+    links:
+      - mongo
+
+
+volumes:
+  mysql_data: ~
+  mongo_data: ~
