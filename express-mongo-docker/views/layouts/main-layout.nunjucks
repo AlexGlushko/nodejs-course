@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    {% include './navbar.nunjucks' %}
+    
+
+    <main>
+        {% block content %}
+        
+        {% endblock %}
+    </main>
+    
+    {% block scripts %} {% endblock %}
+</body>
+</html>
